@@ -1,7 +1,32 @@
-﻿backup/
+# ---- 비밀 값 (절대 커밋 금지) ----
+.env
+.env.*
+!.env.example
+*.secret
+secret*.txt
+
+# ---- 의존성 / 빌드 결과물 ----
+node_modules/
+dist/
+build/
+.next/
+out/
+.vercel/
+
+# ---- 로그 ----
+*.log
+npm-debug.log*
+yarn-error.log*
+
+# ---- 백업 / 임시 파일 ----
+backup/
 backup_*/
 *.bak
 *~
 *.tmp
+
+# ---- 에디터 / OS ----
+.vscode/
+.idea/
 Thumbs.db
 .DS_Store
