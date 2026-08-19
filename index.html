@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Supabase 연결 테스트</title>
+
+  <!-- 모양(CSS)은 style.css 로 분리 -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="page-header">
+  <h1>Supabase 연결 테스트</h1>
+  <p class="subtitle">HTML · CSS · JavaScript 를 파일로 분리한 구조</p>
+</header>
+
+<main>
+
+  <!-- ========== 글 쓰기 ========== -->
+  <section class="card">
+    <h2>글 쓰기</h2>
+
+    <!-- 진짜 <form> 요소. 엔터키로도 제출되고, required 검사도 브라우저가 해줍니다. -->
+    <form id="post-form">
+      <div class="field">
+        <label for="title">제목</label>
+        <input type="text" id="title" name="title" placeholder="제목을 입력하세요" required>
+      </div>
+
+      <div class="field">
+        <label for="content">내용</label>
+        <textarea id="content" name="content" rows="4" placeholder="내용을 입력하세요"></textarea>
+      </div>
+
+      <button type="submit" id="submit-btn">저장하기</button>
+    </form>
+  </section>
+
+  <!-- ========== 글 목록 ========== -->
+  <section class="card">
+    <div class="section-header">
+      <h2>글 목록</h2>
+      <button type="button" id="refresh-btn" class="btn-secondary">새로고침</button>
+    </div>
+
+    <!-- 여기에 JS가 <li> 를 만들어 넣습니다 -->
+    <ul id="post-list" class="post-list">
+      <li class="placeholder">불러오는 중…</li>
+    </ul>
+  </section>
+
+  <!-- ========== 상태 메시지 ========== -->
+  <!-- role="status" : 화면낭독기에게 "여기 내용이 바뀌면 읽어달라"고 알려주는 표준 속성 -->
+  <p id="status" class="status" role="status"></p>
+
+</main>
+
+<!-- 동작(JS). 순서 중요: 라이브러리 먼저, 그 다음 우리 코드 -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="app.js"></script>
+
+</body>
+</html>

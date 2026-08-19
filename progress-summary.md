@@ -44,6 +44,15 @@
 - `CLAUDE.md` 작성 — 다음 세션에서 배경 재설명 없이 이어가기 위한 컨텍스트 문서
 - git 저장소는 초기화돼 있으나 **아직 커밋 0건** (첫 커밋 미실행)
 
+### 7. HTML/CSS/JS 파일 분리 (2026-08-19)
+단일 파일 `supabase-test.html` → 역할별 3개 파일로 재구성
+- `index.html` — 구조만. `<form>` 사용, 인라인 `onclick`/`style` 제거
+- `style.css` — 모양. 다크모드(OS 설정 자동 반영) 포함
+- `app.js` — 동작. `addEventListener`로 이벤트 연결, Supabase 설정값 상단 배치
+- 글 목록을 `JSON.stringify` 덤프 → 실제 HTML 요소(`<li>`)로 렌더링하도록 변경
+- `textContent` 사용으로 입력값이 태그로 해석되지 않도록 처리 (XSS 방지)
+- 기존 `supabase-test.html`은 참고용으로 남겨둠 (동작 확인 후 삭제 가능)
+
 ## 다음에 진행하고 싶은 것 (미정, 선택)
 - [ ] 첫 커밋 실행
 - [ ] 글 수정(update)/삭제(delete) 기능 추가 → CRUD 완성

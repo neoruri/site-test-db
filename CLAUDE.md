@@ -25,19 +25,27 @@
 
 ```
 site-test-db/
-├── supabase-test.html   # 연결 테스트 페이지 (insert / select 동작 확인 완료)
+├── index.html           # 구조(마크업)만
+├── style.css            # 모양
+├── app.js               # 동작 + Supabase 설정값
+├── supabase-test.html   # 초기 단일파일 버전 (참고용, 위 3개로 대체됨)
 ├── progress-summary.md  # 진행 상황 + 다음 할 일 목록
 ├── CLAUDE.md            # 이 파일
 └── .gitignore
 ```
 
+**역할 분리 원칙** — 마크업은 `index.html`, 스타일은 `style.css`, 로직은 `app.js`에 둡니다.
+HTML에 `onclick="..."`이나 `style="..."`을 인라인으로 넣지 마세요. 이벤트는 `app.js`에서 `addEventListener`로 연결합니다.
+
+`app.js`는 **일반 스크립트**입니다. `type="module"`로 바꾸면 `file://`에서 CORS로 막혀 실행이 안 됩니다. 모듈이 필요해지는 시점이 곧 로컬 서버(또는 Next.js)로 넘어갈 시점입니다.
+
 ## 실행 방법
 
 ```bash
-start supabase-test.html
+start index.html
 ```
 
-또는 탐색기에서 `supabase-test.html`을 더블클릭. 서버 불필요.
+또는 탐색기에서 `index.html`을 더블클릭. 빌드도 서버도 불필요.
 
 ## 데이터베이스
 
