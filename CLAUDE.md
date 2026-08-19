@@ -18,6 +18,10 @@
 | 프론트엔드 | 순수 HTML + JavaScript, 빌드 도구 없음 |
 | 라이브러리 로드 | CDN (`@supabase/supabase-js@2` UMD 빌드) |
 | 리전 | ap-northeast-2 (Seoul) |
+| 저장소 | https://github.com/neoruri/site-test-db (Public, 기본 브랜치 `main`) |
+| 배포 | https://site-test-db.vercel.app — `git push` 시 자동 재배포 |
+
+⚠️ **이미 공개 배포된 사이트입니다.** 로컬에서만 도는 코드가 아니므로, 변경을 push하기 전에 동작을 확인하세요.
 
 빌드 단계도 패키지 매니저도 없습니다. **HTML 파일을 브라우저로 직접 열면 실행됩니다.**
 
@@ -58,11 +62,26 @@ start index.html
 | `content` | text | |
 
 ### RLS (Row Level Security)
-- 활성화되어 있습니다. **RLS가 켜진 상태에서 정책이 없으면 모든 쿼리가 조용히 실패합니다.**
-  → insert/select가 안 될 때는 거의 항상 RLS 정책 문제입니다.
-- 현재 정책 `test policy`: 모든 명령(ALL) × `public` 역할 × `USING true` / `WITH CHECK true`
-- ⚠️ **테스트 전용**입니다. 누구나 전체 데이터를 읽고 쓰고 지울 수 있습니다.
-  실제 서비스 전에 반드시 세분화해야 합니다 (예: 본인 글만 수정 가능하도록 `auth.uid()` 기준 제한).
+활성화되어 있습니다. **RLS가 켜진 상태에서 매칭되는 정책이 없으면 그 명령은 차단됩니다.**
+→ insert/select가 안 될 때는 거의 항상 RLS 정책 문제입니다.
+
+현재 정책:
+
+| 정책명 | 명령 | 역할 | 조건 |
+|---|---|---|---|
+| 누구나 글 읽기 | SELECT | anon, authenticated | `using (true)` |
+| 누구나 글 쓰기 | INSERT | anon, authenticated | `with check (true)` |
+
+**UPDATE / DELETE 정책은 일부러 없습니다.** 정책이 없으므로 자동 차단됩니다.
+수정·삭제 기능을 붙이면 실패하는 것이 정상입니다. Auth 도입 전에는 이 상태를 유지하세요.
+
+정책을 다룰 때 기억할 것:
+- 정책은 **허용만** 작성합니다. "금지" 정책이라는 건 없습니다.
+- 정책 여러 개는 **OR로 합쳐집니다.** 조이려면 느슨한 기존 정책을 먼저 지워야 합니다.
+- `using` = 이 행을 볼 수 있는가 (SELECT/UPDATE/DELETE)
+- `with check` = 이 값을 써도 되는가 (INSERT/UPDATE)
+
+Auth 도입 후 목표: `posts.user_id`를 추가하고 `auth.uid() = user_id` 조건으로 본인 글만 수정·삭제.
 
 ## 키 취급 규칙 — 중요
 

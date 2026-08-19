@@ -53,15 +53,37 @@
 - `textContent` 사용으로 입력값이 태그로 해석되지 않도록 처리 (XSS 방지)
 - 기존 `supabase-test.html`은 참고용으로 남겨둠 (동작 확인 후 삭제 가능)
 
+### 8. RLS 정책 세분화 (2026-08-19)
+`test policy`(ALL/전체허용) 삭제하고 명령별로 분리:
+
+| 정책명 | 명령 | 대상 역할 | 조건 |
+|---|---|---|---|
+| 누구나 글 읽기 | SELECT | anon, authenticated | `using (true)` |
+| 누구나 글 쓰기 | INSERT | anon, authenticated | `with check (true)` |
+
+- UPDATE / DELETE는 **정책을 만들지 않음** → 자동 차단됨
+- 배운 것: RLS는 "허용"만 작성한다. 정책이 없으면 곧 차단
+- 배운 것: 정책 여러 개는 OR로 합쳐지므로, 기존 전체허용 정책을 먼저 지워야 의미가 있음
+- 배운 것: `using` = 볼 수 있는가(SELECT/UPDATE/DELETE), `with check` = 써도 되는가(INSERT/UPDATE)
+
+### 9. GitHub + Vercel 배포 (2026-08-19)
+- GitHub: https://github.com/neoruri/site-test-db (Public, 기본 브랜치 `main`)
+- Vercel: **https://site-test-db.vercel.app** — 빌드 없는 정적 배포 (Framework Preset: Other)
+- `git push` 하면 Vercel이 자동 재배포
+- 배포 검증 완료: 글 목록 정상 조회(5건), 콘솔 에러 없음, 모바일 375px 가로스크롤 없음
+- 참고: GitHub 저장소 생성 시 `Something went wrong!` 표시됐으나 실제로는 생성 성공했었음
+
 ## 다음에 진행하고 싶은 것 (미정, 선택)
-- [ ] 첫 커밋 실행
-- [ ] 글 수정(update)/삭제(delete) 기능 추가 → CRUD 완성
+- [ ] 삭제 버튼 추가 → RLS가 실제로 막는지 눈으로 확인 (학습용)
+- [ ] Supabase Auth(회원 로그인) 붙이기 → 이후 "본인 글만 수정/삭제" 정책 적용 가능
 - [ ] 여러 테이블 연결 (foreign key)
 - [ ] Next.js로 전환
-- [ ] GitHub 저장소 생성 및 푸시
-- [ ] Vercel 배포 연동
-- [ ] Supabase Auth(회원 로그인) 붙이기
-- [ ] RLS 정책을 실제 서비스 수준으로 강화 (현재는 all-access 테스트용)
+- [ ] 페이지네이션 / 검색
+
+### 현재 보안 상태 (공개 배포 중이므로 유의)
+- 주소를 아는 사람은 **누구나 글 작성 가능** (스팸 유입 가능)
+- 단, UPDATE/DELETE 차단으로 **기존 데이터 삭제·변조는 불가**
+- 학습 단계에선 허용 범위. Auth 도입 시 자연히 해결됨
 
 ## 참고 - 향후 계획 (사용자 배경)
 - 카페24 기반 몰 시스템(미즈톡톡) 운영 중, 이번 학습은 별도 사이트 신규 구축 목적
