@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>Supabase 연결 테스트</title>
+<style>
+  body { font-family: sans-serif; max-width: 600px; margin: 40px auto; padding: 0 20px; }
+  input, textarea { width: 100%; padding: 8px; margin: 6px 0; box-sizing: border-box; }
+  button { padding: 10px 16px; margin-top: 8px; cursor: pointer; }
+  #log { background: #f4f4f4; padding: 12px; margin-top: 20px; white-space: pre-wrap; font-family: monospace; font-size: 13px; border-radius: 6px; }
+  h2 { margin-top: 40px; }
+  .setup { background: #fff3cd; padding: 12px; border-radius: 6px; margin-bottom: 20px; }
+</style>
+</head>
+<body>
+
+<h1>Supabase 연결 테스트</h1>
+
+<div class="setup">
+  <b>⚠️ 시작 전 필수:</b> 아래 스크립트의 <code>SUPABASE_URL</code>, <code>SUPABASE_KEY</code> 부분을
+  본인의 Project URL, Publishable key로 바꿔주세요. (이 파일을 텍스트 편집기로 열어서 수정)
+</div>
+
+<h2>1. 글 쓰기 (insert)</h2>
+<input id="title" placeholder="제목">
+<textarea id="content" placeholder="내용" rows="3"></textarea>
+<button onclick="addPost()">저장하기</button>
+
+<h2>2. 글 목록 불러오기 (select)</h2>
+<button onclick="loadPosts()">목록 새로고침</button>
+
+<div id="log">여기에 결과가 표시됩니다.</div>
+
+<!-- Supabase 라이브러리를 CDN으로 불러오기 (설치 없이 바로 사용 가능) -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+  // ▼▼▼ 여기 두 줄만 본인 값으로 수정하세요 ▼▼▼
+  const SUPABASE_URL = "https://elcgktqkecweekkupjqn.supabase.co";   // 예: https://elcgktqkecweekkupjqn.supabase.co
+  const SUPABASE_KEY = "sb_publishable_ZVqmcmyrOyyzTyKjJgoVag_xsrw1lr2"; // 예: sb_publishable_...
+  // ▲▲▲ 여기까지 ▲▲▲
+
+  const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  const log = document.getElementById('log');
+
+  function print(msg) {
+    log.textContent = msg;
+  }
+
+  async function addPost() {
+    const title = document.getElementById('title').value;
+    const content = document.getElementById('content').value;
+
+    if (!title) {
+      print("제목을 입력해주세요.");
+      return;
+    }
+
+    const { data, error } = await client
+      .from('posts')
+      .insert([{ title, content }])
+      .select();
+
+    if (error) {
+      print("❌ 저장 실패:\n" + JSON.stringify(error, null, 2) +
+        "\n\n※ RLS(보안) 정책 때문일 가능성이 높습니다. 안내에 따라 Supabase에서 정책을 먼저 만들어주세요.");
+    } else {
+      print("✅ 저장 성공!\n" + JSON.stringify(data, null, 2));
+      document.getElementById('title').value = '';
+      document.getElementById('content').value = '';
+    }
+  }
+
+  async function loadPosts() {
+    const { data, error } = await client
+      .from('posts')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      print("❌ 조회 실패:\n" + JSON.stringify(error, null, 2));
+    } else {
+      print("✅ 조회 성공! (" + data.length + "건)\n" + JSON.stringify(data, null, 2));
+    }
+  }
+</script>
+
+</body>
+</html>
