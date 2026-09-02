@@ -67,6 +67,7 @@
 | 문서 | 분류 | 심각도 |
 |---|---|---|
 | [WSL: Exec format error](wsl-interop-exec-format-error.md) | 오류대응 | 보통 |
+| [nginx 포트 충돌 (IIS)](nginx-port-conflict-iis.md) | 오류대응 | 보통 |
 
 ## 앞으로 (2·3단계)
 
