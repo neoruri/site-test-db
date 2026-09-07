@@ -68,6 +68,7 @@
 |---|---|---|
 | [WSL: Exec format error](wsl-interop-exec-format-error.md) | 오류대응 | 보통 |
 | [nginx 포트 충돌 (IIS)](nginx-port-conflict-iis.md) | 오류대응 | 보통 |
+| [Supabase 무료 플랜 일시정지](supabase-free-tier-paused.md) | 오류대응 | 낮음 |
 
 ## 앞으로 (2·3단계)
 
