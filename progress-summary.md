@@ -1,12 +1,12 @@
 # 학습 진행 요약
 
-> 최종 갱신: 2026-08-27
+> 최종 갱신: 2026-09-07
 
 ---
 
 # 📍 지금 여기
 
-**진행 중:** WSL2 + nginx로 내 사이트를 직접 서빙 성공 (2026-09-02)
+**진행 중:** WSL2 + nginx로 내 사이트를 직접 서빙 성공 (2026-09-07)
 
 ```
 브라우저 → localhost:8888 → WSL2 → nginx → /var/www/html → Supabase(서울)
@@ -154,11 +154,12 @@ UPDATE/DELETE는 **정책 없음 → 자동 차단**. Auth 도입 전까지 유�
 | 2026-08-19 | `.gitignore`·`CLAUDE.md` 작성, HTML/CSS/JS 3파일 분리 |
 | 2026-08-19 | RLS 정책 세분화 (ALL 전체허용 → SELECT/INSERT만) |
 | 2026-08-19 | GitHub 저장소 생성, Vercel 배포, 모바일 확인 |
-| 2026-08-26 | 백엔드 학습 방향 논의 — 언어·OS·아키텍처 |
-| 2026-08-26 | `SECURITY.md` 작성, CLAUDE.md에 보안 리뷰 규칙 추가 |
+| 2026-08-26 | 백엔드 학습 방향 논의 — 언어·OS·아키텍처. `SECURITY.md` + 보안 리뷰 규칙 |
 | 2026-08-26 | [서버 구매 판단 기준](https://claude.ai/code/artifact/a4ba1341-7aab-47c6-9d9b-6df190892cd0) 문서 작성 |
-| 2026-08-26 | WSL2 + Ubuntu 설치, 리눅스 기초 실습 (권한·sudo·shadow) |
-| 2026-08-27 | `docs/glossary.md`·`docs/runbook/` 체계 구축 |
+| 2026-08-27 | WSL2 + Ubuntu 24.04 설치, 리눅스 기초 실습 (폴더 구조·권한·`sudo`) |
+| 2026-08-31 | `docs/runbook/` 체계, `docs/glossary.md`, `docs/linux-cheatsheet.md` 작성 |
+| 2026-09-02 | **학습 방식 전환** (개념 중심 → 목표 중심). nginx 설치, 포트 충돌 해결(8888) |
+| 2026-09-07 | 내 사이트를 nginx로 서빙 성공. Supabase 정지 발견·복구. runbook 3건 축적 |
 
 ---
 
