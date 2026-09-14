@@ -105,6 +105,17 @@ textarea {
   color: var(--text);
 }
 
+input[type="tel"]{
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 15px;
+  background: #000;
+  color: var(--text);
+}
+
 input[type="text"]:focus,
 textarea:focus {
   outline: none;
