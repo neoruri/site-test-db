@@ -224,6 +224,45 @@ button:disabled {
 }
 
 /* ============================================
+   신청 페이지 (apply.html)
+   ============================================ */
+.optional {
+  font-weight: 400;
+  color: var(--text-dim);
+}
+
+/* 안내 상자 */
+.notice {
+  border-color: var(--border);
+}
+
+.notice h2 {
+  font-size: 15px;
+}
+
+.notice p {
+  margin: 0 0 10px;
+  font-size: 14px;
+}
+
+.notice p:last-child {
+  margin-bottom: 0;
+}
+
+.dim {
+  color: var(--text-dim);
+}
+
+code {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1px 5px;
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 12.5px;
+}
+
+/* ============================================
    다크 모드 (OS 설정을 따라감)
    ============================================ */
 @media (prefers-color-scheme: dark) {
