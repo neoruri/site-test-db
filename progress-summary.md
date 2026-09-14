@@ -29,12 +29,15 @@
 | GRANT 부여 (RLS와 짝 맞춤) | ✅ |
 | 신청 페이지 (`apply.html` / `apply.js`) | ✅ 배포됨 |
 | 전화번호 3중 검증 (JS · HTML · DB CHECK) | ✅ |
-| **관리자 계정 만들기** | ⬜ **다음** |
-| 로그인 페이지 | ⬜ |
-| 관리자 목록 페이지 | ⬜ |
-| 💥 로그인 없이 목록 빼내기 시도 | ⬜ |
+| 관리자 계정 생성 (Supabase Auth) | ✅ |
+| `admins` 명단 테이블 + 정책 강화 | ✅ |
+| 관리자 페이지 (`admin.html` / `admin.js`) | ✅ 배포됨 |
+| **💥 인증/인가 분리 검증** | ✅ 명단에서 빼면 로그인해도 안 보임 |
 
-**바로 다음 한 걸음:** Supabase 대시보드에서 관리자 계정 생성 → 로그인 페이지 제작
+**바로 다음 한 걸음 (선택):**
+- [ ] 관리자가 상태를 `접수` → `완료`로 바꾸기 (UPDATE 권한 추가)
+- [ ] 회원가입 차단 설정 찾아서 끄기 (다층 방어)
+- [ ] nginx 로그 읽기 · 💥 일부러 부수고 복구
 
 **막힌 것:** 없음
 
@@ -149,7 +152,8 @@ UPDATE/DELETE는 **정책 없음 → 자동 차단**. Auth 도입 전까지 유�
 - GitHub: https://github.com/neoruri/site-test-db (Public, `main`)
 - Vercel: https://site-test-db.vercel.app — push 시 자동 재배포
   - `/index.html` — 초기 Supabase 연결 테스트 (게시판형)
-  - `/apply.html` — **신청 페이지** ← 진행 중인 프로젝트
+  - `/apply.html` — **신청 페이지** (고객용, 로그인 불필요)
+  - `/admin.html` — **관리자 페이지** (로그인 + 신청 내역 조회)
 
 ## `applications` 테이블 (신청 내역)
 | 컬럼 | 타입 | 비고 |
@@ -164,13 +168,39 @@ UPDATE/DELETE는 **정책 없음 → 자동 차단**. Auth 도입 전까지 유�
 ### 권한 설계 — `posts`와 다른 점
 | 명령 | GRANT (문 앞) | RLS 정책 (방 안) |
 |---|---|---|
-| INSERT | `anon, authenticated` | `anon, authenticated` |
-| **SELECT** | **`authenticated`만** | **`authenticated`만** |
+| INSERT | `anon, authenticated` | `with check (true)` |
+| **SELECT** | `authenticated` | **`exists (select 1 from admins where user_id = auth.uid())`** |
 | UPDATE/DELETE | 없음 | 없음 |
 
 `posts`(게시판)는 SELECT가 `anon`에게도 열려 있지만,
-`applications`(신청서)는 **개인정보라 로그인한 사람만** 볼 수 있다.
+`applications`(신청서)는 **개인정보라 관리자 명단에 있는 계정만** 볼 수 있다.
 **두 층이 같은 방향을 봐야 통과한다** — 하나만 열려 있으면 막힌다.
+
+## `admins` 테이블 (관리자 명단)
+| 컬럼 | 타입 | 비고 |
+|---|---|---|
+| `user_id` | uuid | PK, `auth.users(id)` 참조, `on delete cascade` |
+| `memo` | text | 메모 |
+
+| 명령 | GRANT | RLS 정책 |
+|---|---|---|
+| SELECT | `authenticated` | **`user_id = auth.uid()`** — 자기 행만 |
+
+**왜 자기 행만 보게 하나:** `applications` 정책이 `admins`를 읽어야 판단할 수 있는데,
+아무 권한도 없으면 **정책이 자기 조건을 확인하지 못해 `permission denied`** 가 난다.
+그렇다고 전체를 열면 **누가 관리자인지 노출**된다.
+그래서 **문은 열되(GRANT) 자기 행만 보이게(RLS)** 한다.
+
+**관리자 추가/제거**
+```sql
+-- 추가
+insert into admins (user_id, memo)
+select id, '메모' from auth.users where email = '주소@example.com';
+
+-- 제거
+delete from admins
+where user_id = (select id from auth.users where email = '주소@example.com');
+```
 
 ## 로컬
 - WSL2 Ubuntu 24.04.1 LTS / 사용자 `neoguri` (uid 1000, sudo 그룹)
@@ -219,6 +249,7 @@ UPDATE/DELETE는 **정책 없음 → 자동 차단**. Auth 도입 전까지 유�
 | 2026-09-02 | **학습 방식 전환** (개념 중심 → 목표 중심). nginx 설치, 포트 충돌 해결(8888) |
 | 2026-09-07 | 내 사이트를 nginx로 서빙 성공. Supabase 정지 발견·복구. runbook 3건 축적 |
 | 2026-09-14 | **PostgreSQL 16 직접 설치.** DB·앱 전용 계정 생성, 최소 권한 부여, 차단 확인 |
+| 2026-09-14 | **신청 페이지 + 관리자 페이지 완성.** Auth 로그인, `admins` 명단 기반 RLS, 인증/인가 분리 검증 |
 
 ---
 
@@ -245,3 +276,12 @@ UPDATE/DELETE는 **정책 없음 → 자동 차단**. Auth 도입 전까지 유�
   JS 필터·HTML `pattern`은 브라우저 안의 일이라 지울 수 있다. **DB CHECK만이 진짜 방어다**
 - **구조와 데이터는 별개다.** `CREATE TABLE`은 한 번뿐이고, 이후 변경은 `ALTER`(구조)와
   `UPDATE`(데이터)로 나눠서 한다. 기존 데이터가 새 규칙을 위반하면 규칙 추가가 실패한다
+- **인증과 인가는 실제로 분리되어 작동한다.** 로그인 상태를 그대로 둔 채 `admins` 명단에서
+  행 하나만 지우면 데이터가 안 보인다. 코드는 한 줄도 바뀌지 않는다.
+  → "로그인했다"와 "권한이 있다"는 다른 말이다
+- **정책 조건 안의 조회도 권한 검사를 받는다.** 정책이 다른 테이블을 참조하면
+  그 테이블에도 접근 권한이 있어야 한다. 없으면 정책이 판단 자체를 못 해서 오류가 난다
+- **오류 메시지로 정보를 흘리지 않는다.** 로그인 실패 시 "그런 이메일 없음"이라고 답하면
+  어떤 계정이 존재하는지 알려주는 셈이다. "이메일 또는 비밀번호가 올바르지 않습니다"로 뭉뚱그린다
+- **화면을 감추는 건 보안이 아니다.** 개발자도구로 `hidden`을 지우면 영역이 드러나지만
+  내용은 비어 있다. 데이터를 막는 건 화면이 아니라 RLS다
