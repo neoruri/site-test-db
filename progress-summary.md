@@ -14,9 +14,9 @@
 ```
 
 **바로 다음 한 걸음:**
-- [ ] PostgreSQL 외부 노출 차단 확인 (`listen_addresses`, `pg_hba.conf`)
-- [ ] 또는 오늘 만든 DB에 **RLS 직접 걸어보기** — Supabase가 대신 해주던 것을 손으로
+- [ ] 오늘 만든 DB에 **RLS 직접 걸어보기** — Supabase가 대신 해주던 것을 손으로
 - [ ] 또는 **Supabase Auth 실습** 으로 전환
+- [ ] 또는 nginx 로그 읽기 · 💥 일부러 부수고 복구
 
 **막힌 것:** 없음
 
@@ -72,7 +72,7 @@
 | **PostgreSQL 16 직접 설치** | ✅ |
 | **DB·앱 전용 계정 생성, 최소 권한 부여** | ✅ |
 | **💥 권한 테스트 — UPDATE/DELETE 차단 확인** | ✅ |
-| PostgreSQL 외부 노출 차단 확인 | ⬜ |
+| **PostgreSQL 외부 노출 차단 확인** | ✅ |
 | 오늘 만든 DB에 RLS 직접 걸어보기 | ⬜ |
 | nginx 로그 읽기 (`/var/log/nginx/`) | ⬜ |
 | 💥 일부러 부수고 복구하기 | ⬜ |
