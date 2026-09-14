@@ -6,14 +6,16 @@
 
 # 📍 지금 여기
 
-**진행 중:** WSL2 + nginx로 내 사이트를 직접 서빙 성공 (2026-09-07)
+**진행 중:** WSL2에 PostgreSQL 직접 설치·계정 권한 실습 완료 (2026-09-14)
 
 ```
 브라우저 → localhost:8888 → WSL2 → nginx → /var/www/html → Supabase(서울)
+                                  └ PostgreSQL 16 (mysite DB) ← 오늘 직접 구축
 ```
 
 **바로 다음 한 걸음:**
-- [ ] nginx 심화 — 설정 구조, 로그 읽기, 일부러 부수고 복구
+- [ ] PostgreSQL 외부 노출 차단 확인 (`listen_addresses`, `pg_hba.conf`)
+- [ ] 또는 오늘 만든 DB에 **RLS 직접 걸어보기** — Supabase가 대신 해주던 것을 손으로
 - [ ] 또는 **Supabase Auth 실습** 으로 전환
 
 **막힌 것:** 없음
@@ -67,9 +69,24 @@
 | **설정 파일 수정 (`nano`, `nginx -t`)** | ✅ |
 | **권한 문제 해결 (`sudo cp`)** | ✅ |
 | **내 사이트를 nginx로 서빙** | ✅ **완료** |
+| **PostgreSQL 16 직접 설치** | ✅ |
+| **DB·앱 전용 계정 생성, 최소 권한 부여** | ✅ |
+| **💥 권한 테스트 — UPDATE/DELETE 차단 확인** | ✅ |
+| PostgreSQL 외부 노출 차단 확인 | ⬜ |
+| 오늘 만든 DB에 RLS 직접 걸어보기 | ⬜ |
 | nginx 로그 읽기 (`/var/log/nginx/`) | ⬜ |
 | 💥 일부러 부수고 복구하기 | ⬜ |
 | **VPS 구매 → 실전 세팅** | ⬜ |
+
+### 직접 만든 DB (WSL 안, 연습용)
+| 항목 | 값 |
+|---|---|
+| DB 이름 | `mysite` |
+| 관리자 계정 | `postgres` (peer 인증 — `sudo -u postgres psql`) |
+| 앱 전용 계정 | `app_user` (비밀번호 인증) |
+| `app_user` 권한 | `CONNECT`, `USAGE ON SCHEMA public`, `SELECT`/`INSERT` on `posts` |
+| **일부러 안 준 권한** | `UPDATE`, `DELETE` → 차단 확인됨 |
+| 접속 | `psql -h localhost -U app_user -d mysite` |
 
 > **학습 방식 변경(2026-09-02):** 개념부터 가르치는 방식이 흡수가 안 돼서,
 > **"무엇을 만든다"는 목표를 정하고 막히는 지점에서 개념을 배우는 방식**으로 전환.
@@ -160,6 +177,7 @@ UPDATE/DELETE는 **정책 없음 → 자동 차단**. Auth 도입 전까지 유�
 | 2026-08-31 | `docs/runbook/` 체계, `docs/glossary.md`, `docs/linux-cheatsheet.md` 작성 |
 | 2026-09-02 | **학습 방식 전환** (개념 중심 → 목표 중심). nginx 설치, 포트 충돌 해결(8888) |
 | 2026-09-07 | 내 사이트를 nginx로 서빙 성공. Supabase 정지 발견·복구. runbook 3건 축적 |
+| 2026-09-14 | **PostgreSQL 16 직접 설치.** DB·앱 전용 계정 생성, 최소 권한 부여, 차단 확인 |
 
 ---
 
@@ -173,3 +191,9 @@ UPDATE/DELETE는 **정책 없음 → 자동 차단**. Auth 도입 전까지 유�
 - **"고쳤다"와 "고쳐진 걸 확인했다"는 다르다.** 조치 후 실제 동작을 테스트할 것
 - 진단 순서는 어떤 장애든 같다: 증상 → 메시지 해석 → 상태 조회 → 원인 추정 → 조치 → **검증**
 - **해본 적 없는 백업은 백업이 아니다**
+- **`GRANT`와 RLS는 층이 다르다** — `GRANT`는 **테이블 단위**("이 표에 접근 가능한가"),
+  RLS는 **행 단위**("이 줄을 볼 수 있는가"). `GRANT`만으로는 "본인 글만 수정"이 불가능하다
+- **관리자 계정은 RLS를 무시한다** (`Bypass RLS`) — Supabase Secret key와 같은 성격.
+  그래서 **앱은 반드시 전용 계정**으로 연결한다
+- SQL 오류도 두 종류를 구분한다: `syntax error`(내가 잘못 씀) / `permission denied`(막힌 것)
+- 프롬프트가 위치를 알려준다: `$`=리눅스 명령 · `=#`=SQL(관리자) · `=>`=SQL(일반) · `->`=입력 미완
