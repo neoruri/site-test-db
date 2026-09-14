@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>관리자 — 신청 내역</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="page-header">
+  <h1>관리자</h1>
+  <p class="subtitle" id="header-sub">확인 중…</p>
+</header>
+
+<main>
+
+  <!-- ========== 로그인 화면 ========== -->
+  <!-- 로그인 상태에 따라 이 영역과 아래 목록 영역 중 하나만 보입니다 -->
+  <section class="card" id="login-view" hidden>
+    <h2>로그인</h2>
+
+    <form id="login-form">
+      <div class="field">
+        <label for="email">이메일</label>
+        <input type="email" id="email" name="email"
+               autocomplete="username"
+               placeholder="admin@test.local" required>
+      </div>
+
+      <div class="field">
+        <label for="password">비밀번호</label>
+        <input type="password" id="password" name="password"
+               autocomplete="current-password"
+               placeholder="비밀번호" required>
+      </div>
+
+      <button type="submit" id="login-btn">로그인</button>
+    </form>
+  </section>
+
+  <!-- ========== 신청 목록 화면 ========== -->
+  <section class="card" id="list-view" hidden>
+    <div class="section-header">
+      <h2>신청 내역</h2>
+      <div>
+        <button type="button" id="refresh-btn" class="btn-secondary">새로고침</button>
+        <button type="button" id="logout-btn" class="btn-secondary">로그아웃</button>
+      </div>
+    </div>
+
+    <ul id="application-list" class="post-list">
+      <li class="placeholder">불러오는 중…</li>
+    </ul>
+  </section>
+
+  <!-- ========== 상태 메시지 ========== -->
+  <p id="status" class="status" role="status"></p>
+
+  <!-- ========== 학습용 안내 ========== -->
+  <section class="card notice">
+    <h2>⚠️ 학습용 페이지입니다</h2>
+    <p>
+      이 화면은 신청자의 <strong>이름과 연락처</strong>를 표시합니다.
+      실제 개인정보가 아닌 테스트 데이터만 사용하세요.
+    </p>
+    <p class="dim">
+      조회 권한은 <code>admins</code> 명단에 등록된 계정에만 있습니다.
+      로그인만 해서는 볼 수 없습니다.
+    </p>
+  </section>
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="admin.js"></script>
+
+</body>
+</html>

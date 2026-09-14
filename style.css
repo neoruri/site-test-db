@@ -93,7 +93,12 @@ label {
   color: var(--text-dim);
 }
 
+/* 입력칸 종류가 늘어나도 한 곳에서 관리되도록 묶어둡니다.
+   text · tel · email · password · textarea 전부 같은 모양. */
 input[type="text"],
+input[type="tel"],
+input[type="email"],
+input[type="password"],
 textarea {
   width: 100%;
   padding: 10px 12px;
@@ -101,22 +106,14 @@ textarea {
   border-radius: 6px;
   font-family: inherit;
   font-size: 15px;
-  background: #fff;
-  color: var(--text);
-}
-
-input[type="tel"]{
-  width: 100%;
-  padding: 10px 12px;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  font-family: inherit;
-  font-size: 15px;
-  background: #000;
+  background: var(--card);
   color: var(--text);
 }
 
 input[type="text"]:focus,
+input[type="tel"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
 textarea:focus {
   outline: none;
   border-color: var(--accent);
@@ -290,6 +287,9 @@ code {
   }
 
   input[type="text"],
+  input[type="tel"],
+  input[type="email"],
+  input[type="password"],
   textarea {
     background: #16181c;
   }
