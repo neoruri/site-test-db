@@ -8,6 +8,9 @@ const SUPABASE_KEY = "sb_publishable_ZVqmcmyrOyyzTyKjJgoVag_xsrw1lr2";
 
 const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+// 첨부 파일이 담긴 버킷 이름 (006 에서 만든 것)
+const BUCKET = "applications";
+
 
 // =====================================================
 //  HTML 요소
@@ -93,6 +96,16 @@ function renderApplications(rows) {
       li.appendChild(p);
     }
 
+    // 첨부 사진이 있으면 자리를 만들어두고, 주소는 뒤에서 채웁니다.
+    if (row.image_path) {
+      const img = document.createElement("img");
+      img.className = "post-image";
+      img.alt = row.name + " 님이 첨부한 사진";
+      img.loading = "lazy";
+      li.appendChild(img);
+      attachSignedImage(img, row.image_path);
+    }
+
     const meta = document.createElement("div");
     meta.className = "post-meta";
     meta.textContent =
@@ -103,6 +116,37 @@ function renderApplications(rows) {
 
     listEl.appendChild(li);
   });
+}
+
+
+// =====================================================
+//  첨부 사진 보여주기 — Signed URL
+//
+//  버킷이 Private 이라 파일 주소를 그냥 만들어서는 열리지 않습니다.
+//  Storage 정책(006)을 통과해야 '유효기간이 있는 임시 주소'를 받습니다.
+//
+//  주소가 유출돼도 시간이 지나면 쓸 수 없습니다.
+//  은행 앱에서 서류를 잠깐 보여줄 때 쓰는 방식과 같습니다.
+// =====================================================
+async function attachSignedImage(imgEl, path) {
+  const { data, error } = await client
+    .storage
+    .from(BUCKET)
+    .createSignedUrl(path, 3600);   // 3600초 = 1시간
+
+  if (error) {
+    imgEl.replaceWith(makeImageError(error.message));
+    return;
+  }
+
+  imgEl.src = data.signedUrl;
+}
+
+function makeImageError(message) {
+  const p = document.createElement("p");
+  p.className = "post-meta";
+  p.textContent = "사진을 불러오지 못했습니다: " + message;
+  return p;
 }
 
 

@@ -261,6 +261,44 @@ button:disabled {
   color: var(--text-dim);
 }
 
+/* 입력칸 아래 보조 설명 */
+.field-hint {
+  margin: 6px 0 0;
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+/* 파일 선택 */
+input[type="file"] {
+  width: 100%;
+  padding: 8px;
+  border: 1px dashed var(--border);
+  border-radius: 6px;
+  background: var(--card);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+input[type="file"]:focus {
+  outline: none;
+  border-color: var(--accent);
+  border-style: solid;
+}
+
+/* 관리자 화면의 첨부 사진 */
+.post-image {
+  display: block;
+  max-width: 100%;
+  max-height: 260px;
+  width: auto;
+  margin: 10px 0 0;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+}
+
 code {
   background: var(--bg);
   border: 1px solid var(--border);

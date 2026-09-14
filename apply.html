@@ -35,6 +35,15 @@
         <textarea id="message" name="message" rows="4" placeholder="하실 말씀이 있으면 적어주세요"></textarea>
       </div>
 
+      <div class="field">
+        <label for="image">사진 첨부 <span class="optional">(선택)</span></label>
+        <!-- accept 는 파일 선택창에서 이미지만 보이게 하는 '편의' 기능입니다.
+             실제 차단은 JS 검사와 버킷의 MIME 제한이 담당합니다. -->
+        <input type="file" id="image" name="image"
+               accept="image/jpeg,image/png,image/webp">
+        <p class="field-hint">JPG · PNG · WEBP · 5MB 이하</p>
+      </div>
+
       <button type="submit" id="submit-btn">신청하기</button>
     </form>
   </section>
