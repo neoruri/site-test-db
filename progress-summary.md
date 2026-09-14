@@ -13,10 +13,28 @@
                                   └ PostgreSQL 16 (mysite DB) ← 오늘 직접 구축
 ```
 
-**바로 다음 한 걸음:**
-- [ ] 오늘 만든 DB에 **RLS 직접 걸어보기** — Supabase가 대신 해주던 것을 손으로
-- [ ] 또는 **Supabase Auth 실습** 으로 전환
-- [ ] 또는 nginx 로그 읽기 · 💥 일부러 부수고 복구
+**진행 중 프로젝트: 신청 페이지 + 관리자 조회**
+고객이 신청하면 관리자만 내역을 볼 수 있는 마이크로 페이지.
+미즈톡톡 체험단·이벤트 신청 페이지와 같은 구조.
+
+```
+[누구나] apply.html ──INSERT──> applications 테이블
+                                     │ 🔒 SELECT 차단
+[관리자]    ???     ──SELECT──X    (로그인 미구현)
+```
+
+| 단계 | 상태 |
+|---|---|
+| 테이블 + RLS 설계 (쓰기만 허용) | ✅ |
+| GRANT 부여 (RLS와 짝 맞춤) | ✅ |
+| 신청 페이지 (`apply.html` / `apply.js`) | ✅ 배포됨 |
+| 전화번호 3중 검증 (JS · HTML · DB CHECK) | ✅ |
+| **관리자 계정 만들기** | ⬜ **다음** |
+| 로그인 페이지 | ⬜ |
+| 관리자 목록 페이지 | ⬜ |
+| 💥 로그인 없이 목록 빼내기 시도 | ⬜ |
+
+**바로 다음 한 걸음:** Supabase 대시보드에서 관리자 계정 생성 → 로그인 페이지 제작
 
 **막힌 것:** 없음
 
@@ -130,6 +148,29 @@ UPDATE/DELETE는 **정책 없음 → 자동 차단**. Auth 도입 전까지 유�
 ## 배포
 - GitHub: https://github.com/neoruri/site-test-db (Public, `main`)
 - Vercel: https://site-test-db.vercel.app — push 시 자동 재배포
+  - `/index.html` — 초기 Supabase 연결 테스트 (게시판형)
+  - `/apply.html` — **신청 페이지** ← 진행 중인 프로젝트
+
+## `applications` 테이블 (신청 내역)
+| 컬럼 | 타입 | 비고 |
+|---|---|---|
+| `id` | int8 | PK, 자동 증가 |
+| `created_at` | timestamptz | 기본값 `now()` |
+| `name` | text | 필수 |
+| `phone` | text | 필수. **CHECK 제약** `^[0-9]{10,11}$` |
+| `message` | text | 선택 |
+| `status` | text | 기본값 `접수` |
+
+### 권한 설계 — `posts`와 다른 점
+| 명령 | GRANT (문 앞) | RLS 정책 (방 안) |
+|---|---|---|
+| INSERT | `anon, authenticated` | `anon, authenticated` |
+| **SELECT** | **`authenticated`만** | **`authenticated`만** |
+| UPDATE/DELETE | 없음 | 없음 |
+
+`posts`(게시판)는 SELECT가 `anon`에게도 열려 있지만,
+`applications`(신청서)는 **개인정보라 로그인한 사람만** 볼 수 있다.
+**두 층이 같은 방향을 봐야 통과한다** — 하나만 열려 있으면 막힌다.
 
 ## 로컬
 - WSL2 Ubuntu 24.04.1 LTS / 사용자 `neoguri` (uid 1000, sudo 그룹)
@@ -197,3 +238,10 @@ UPDATE/DELETE는 **정책 없음 → 자동 차단**. Auth 도입 전까지 유�
   그래서 **앱은 반드시 전용 계정**으로 연결한다
 - SQL 오류도 두 종류를 구분한다: `syntax error`(내가 잘못 씀) / `permission denied`(막힌 것)
 - 프롬프트가 위치를 알려준다: `$`=리눅스 명령 · `=#`=SQL(관리자) · `=>`=SQL(일반) · `->`=입력 미완
+- **GRANT와 RLS는 둘 다 열려야 통과한다.** GRANT에서 막히면 `401 permission denied`,
+  RLS에서 막히면 `200 []`(빈 목록). RLS 쪽이 정보를 덜 흘리고, GRANT 쪽이 더 엄격하다
+- **SQL로 만든 테이블은 GRANT를 직접 해줘야 한다.** 대시보드로 만들면 자동으로 붙는다
+- **입력 검증은 세 겹이고, 앞의 두 겹은 전부 우회 가능하다**
+  JS 필터·HTML `pattern`은 브라우저 안의 일이라 지울 수 있다. **DB CHECK만이 진짜 방어다**
+- **구조와 데이터는 별개다.** `CREATE TABLE`은 한 번뿐이고, 이후 변경은 `ALTER`(구조)와
+  `UPDATE`(데이터)로 나눠서 한다. 기존 데이터가 새 규칙을 위반하면 규칙 추가가 실패한다
