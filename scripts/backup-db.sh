@@ -48,6 +48,25 @@ KEEP_DAYS="${KEEP_DAYS:-30}"
 
 
 # -----------------------------------------------------
+# 1-1. 쓸 pg_dump 고르기
+# -----------------------------------------------------
+#
+# pg_dump 버전은 서버 버전보다 같거나 높아야 합니다. 낮으면 거부됩니다.
+# (Supabase 는 PostgreSQL 17, Ubuntu 24.04 기본 패키지는 16)
+#
+# 여러 버전이 설치돼 있으면 가장 높은 것을 고릅니다.
+# sort -V 는 버전 번호 순으로 정렬합니다 (일반 정렬은 10 이 9 보다 앞에 옴).
+
+PG_DUMP=$(ls -d /usr/lib/postgresql/*/bin/pg_dump 2>/dev/null | sort -V | tail -1 || true)
+PG_DUMP="${PG_DUMP:-$(command -v pg_dump)}"
+
+if [ -z "$PG_DUMP" ]; then
+  echo "오류: pg_dump 를 찾을 수 없습니다."
+  exit 1
+fi
+
+
+# -----------------------------------------------------
 # 2. 백업 실행
 # -----------------------------------------------------
 mkdir -p "$OUT"
@@ -56,11 +75,12 @@ STAMP=$(date +%Y-%m-%d_%H%M)
 FILE="$OUT/db_${STAMP}.sql"
 
 echo "[1/4] 백업 중... ($PGHOST)"
+echo "      사용: $PG_DUMP ($("$PG_DUMP" --version | awk '{print $3}'))"
 
 # --schema=public  : 우리가 만든 테이블만 (posts, applications, admins)
 # --no-owner       : 소유자 정보 제외 — 다른 환경에 복구할 때 충돌을 막음
 # --no-privileges  : 권한(GRANT) 정보 제외 — 구조는 db/ 마이그레이션에 있음
-pg_dump --schema=public --no-owner --no-privileges > "$FILE"
+"$PG_DUMP" --schema=public --no-owner --no-privileges > "$FILE"
 
 
 # -----------------------------------------------------
