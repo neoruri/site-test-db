@@ -40,7 +40,9 @@
 | **이미지 첨부** (Private 버킷 + Signed URL) | ✅ |
 
 **바로 다음 한 걸음 (선택):**
-- [ ] 💥 **복구 테스트** — 백업 파일로 실제로 되살려보기 (가장 시급. 순서는 `docs/workflow.md` G)
+- [ ] 💥 **복구 테스트** — 백업 파일로 실제로 되살려보기 (가장 시급. 순서는 `docs/disaster-recovery.md` 6장)
+- [ ] 🔴 **Storage(첨부 이미지) 백업** — 현재 사본이 아예 없음
+- [ ] 🔴 `docs/secrets-inventory.md` 의 ⬜ 채우기 + Supabase 2단계 인증 켜기
 - [ ] 백업 **암호화 + 다른 장소 보관** (지금은 같은 PC에만 있음)
 - [ ] cron 등록 (스크립트·명령은 `scripts/README.md` 에 준비됨)
 - [ ] 관리자가 상태를 `접수` → `완료`로 바꾸기 (UPDATE 권한 추가)
@@ -132,7 +134,10 @@
 | `SECURITY.md` | 보안 체크리스트 | ✅ |
 | **`docs/setup-guide.md`** | **새 프로젝트 0부터 세우는 순서** | ✅ |
 | **`docs/workflow.md`** | **기능 하나 만드는 순서 (레시피)** | ✅ |
-| `docs/glossary.md` | 용어 사전 | ✅ |
+| **`docs/sql-guide.md`** | **SQL 명령어 설명 + 예시** | ✅ |
+| **`docs/disaster-recovery.md`** | **전부 날아갔을 때 되살리는 순서** | ✅ |
+| **`docs/secrets-inventory.md`** | **비밀 값 목록 (값 없이 보관 위치만)** | 🔶 ⬜ 채워야 함 |
+| `docs/glossary.md` | 용어 사전 | 🔶 9월 용어 누락 |
 | `docs/linux-cheatsheet.md` | 리눅스 명령 (상황별) | ✅ |
 | `docs/feature-map.md` | 실서비스 기능 지도 | ✅ |
 | `docs/runbook/` | 장애 대응 기록 | ✅ 4건 |
@@ -149,6 +154,9 @@
 | **새로 만들려면 뭐부터 하더라** | `docs/setup-guide.md` |
 | **기능 하나 추가하는 순서** | `docs/workflow.md` |
 | 이 명령어 뭐였더라 | `docs/linux-cheatsheet.md` |
+| **이 SQL 명령 어떻게 쓰더라** | `docs/sql-guide.md` |
+| **날아갔는데 어떻게 되살리지** | `docs/disaster-recovery.md` |
+| 그 비밀번호 어디 뒀더라 | `docs/secrets-inventory.md` |
 | 이 용어 뜻이 뭐더라 | `docs/glossary.md` |
 | 실서비스에 뭐가 더 필요하더라 | `docs/feature-map.md` |
 | 이 오류 전에도 봤는데 | `docs/runbook/` |
@@ -302,6 +310,10 @@ where user_id = (select id from auth.users where email = '주소@example.com');
 | 2026-09-15 | **`queries/` 정리** (점검·관리자·통계·Storage), `linux-cheatsheet.md` 대폭 보강 |
 | 2026-09-15 | **`docs/workflow.md`** 작성 — 기능 하나 만드는 순서를 레시피로 |
 | 2026-09-15 | **`docs/setup-guide.md`** 작성 — 프로젝트를 0부터 세우는 14단계 + 놓쳤던 15가지 |
+| 2026-09-15 | **`docs/disaster-recovery.md`** — 자산 지도·시나리오별 복구·전체 재구축 순서 |
+| 2026-09-15 | **`docs/secrets-inventory.md`** — 비밀 값 목록 (값은 안 적음). ⬜ 채우기는 숙제 |
+| 2026-09-15 | **`docs/sql-guide.md`** — SQL 명령어별 용도·예시·오류 해석 |
+| 2026-09-15 | 🔴 **발견: 첨부 이미지(Storage)가 백업되지 않고 있음** — DB만 백업 중 |
 
 ---
 
