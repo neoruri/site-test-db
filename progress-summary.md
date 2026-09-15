@@ -1,26 +1,30 @@
 # 학습 진행 요약
 
-> 최종 갱신: 2026-09-07
+> 최종 갱신: 2026-09-15
+
+> **어떤 순서로 작업하는지**는 [`docs/workflow.md`](docs/workflow.md) 에 있습니다.
+> 이 파일은 **무엇을 했고 무엇을 할 것인가**만 다룹니다.
 
 ---
 
 # 📍 지금 여기
 
-**진행 중:** WSL2에 PostgreSQL 직접 설치·계정 권한 실습 완료 (2026-09-14)
+**진행 중:** 백업 자동화 + 문서 체계 정리 (2026-09-15)
 
 ```
 브라우저 → localhost:8888 → WSL2 → nginx → /var/www/html → Supabase(서울)
-                                  └ PostgreSQL 16 (mysite DB) ← 오늘 직접 구축
+                                  ├ PostgreSQL 16 (mysite DB) — 연습용
+                                  └ ~/site-backup/ → pg_dump → output/*.sql.gz
 ```
 
-**진행 중 프로젝트: 신청 페이지 + 관리자 조회**
+**완료된 프로젝트: 신청 페이지 + 관리자 조회**
 고객이 신청하면 관리자만 내역을 볼 수 있는 마이크로 페이지.
 미즈톡톡 체험단·이벤트 신청 페이지와 같은 구조.
 
 ```
-[누구나] apply.html ──INSERT──> applications 테이블
-                                     │ 🔒 SELECT 차단
-[관리자]    ???     ──SELECT──X    (로그인 미구현)
+[누구나] apply.html ──INSERT──> applications 테이블 ──> Storage(Private)
+                                     │ 🔒 관리자만 SELECT
+[관리자] admin.html ──로그인──> admins 명단 확인 ──> 목록 + Signed URL
 ```
 
 | 단계 | 상태 |
@@ -36,6 +40,9 @@
 | **이미지 첨부** (Private 버킷 + Signed URL) | ✅ |
 
 **바로 다음 한 걸음 (선택):**
+- [ ] 💥 **복구 테스트** — 백업 파일로 실제로 되살려보기 (가장 시급. 순서는 `docs/workflow.md` G)
+- [ ] 백업 **암호화 + 다른 장소 보관** (지금은 같은 PC에만 있음)
+- [ ] cron 등록 (스크립트·명령은 `scripts/README.md` 에 준비됨)
 - [ ] 관리자가 상태를 `접수` → `완료`로 바꾸기 (UPDATE 권한 추가)
 - [ ] 회원가입 차단 설정 찾아서 끄기 (다층 방어)
 - [ ] nginx 로그 읽기 · 💥 일부러 부수고 복구
@@ -123,9 +130,29 @@
 |---|---|---|
 | `CLAUDE.md` | Claude 작업 규칙 | ✅ |
 | `SECURITY.md` | 보안 체크리스트 | ✅ |
+| **`docs/setup-guide.md`** | **새 프로젝트 0부터 세우는 순서** | ✅ |
+| **`docs/workflow.md`** | **기능 하나 만드는 순서 (레시피)** | ✅ |
 | `docs/glossary.md` | 용어 사전 | ✅ |
-| `docs/runbook/` | 장애 대응 기록 | ✅ 1건 |
+| `docs/linux-cheatsheet.md` | 리눅스 명령 (상황별) | ✅ |
+| `docs/feature-map.md` | 실서비스 기능 지도 | ✅ |
+| `docs/runbook/` | 장애 대응 기록 | ✅ 4건 |
+| `db/` | DB 변경 이력 (append-only) | ✅ 6건 |
+| `queries/` | 자주 쓰는 조회 | ✅ 4건 |
+| `scripts/` | 백업 스크립트 | ✅ |
 | **runbook 검색 사이트** | Auth 학습 후 제작 | ⬜ |
+
+**문서를 나눈 기준 — 찾을 때 헤매지 않으려고**
+
+| 질문 | 볼 파일 |
+|---|---|
+| 뭘 했더라 / 뭘 할 차례더라 | `progress-summary.md` (이 파일) |
+| **새로 만들려면 뭐부터 하더라** | `docs/setup-guide.md` |
+| **기능 하나 추가하는 순서** | `docs/workflow.md` |
+| 이 명령어 뭐였더라 | `docs/linux-cheatsheet.md` |
+| 이 용어 뜻이 뭐더라 | `docs/glossary.md` |
+| 실서비스에 뭐가 더 필요하더라 | `docs/feature-map.md` |
+| 이 오류 전에도 봤는데 | `docs/runbook/` |
+| 이 쿼리 어떻게 썼더라 | `queries/` |
 
 **runbook 사이트 계획 (3단계):**
 1. ~~마크다운으로 형식 잡기~~ ✅
@@ -269,6 +296,12 @@ where user_id = (select id from auth.users where email = '주소@example.com');
 | 2026-09-07 | 내 사이트를 nginx로 서빙 성공. Supabase 정지 발견·복구. runbook 3건 축적 |
 | 2026-09-14 | **PostgreSQL 16 직접 설치.** DB·앱 전용 계정 생성, 최소 권한 부여, 차단 확인 |
 | 2026-09-14 | **신청 페이지 + 관리자 페이지 완성.** Auth 로그인, `admins` 명단 기반 RLS, 인증/인가 분리 검증 |
+| 2026-09-14 | 이미지 첨부 (Private 버킷 · Signed URL), CSV 내보내기·인코딩(BOM) 정리 |
+| 2026-09-15 | **백업 자동화 스크립트** 작성 (`pg_dump` → 검증 → 압축 → 보관기간 정리). cron은 보류 |
+| 2026-09-15 | 국내 대체(네이버클라우드) 분석, **`docs/feature-map.md`** 작성 — 실서비스 기능 지도 |
+| 2026-09-15 | **`queries/` 정리** (점검·관리자·통계·Storage), `linux-cheatsheet.md` 대폭 보강 |
+| 2026-09-15 | **`docs/workflow.md`** 작성 — 기능 하나 만드는 순서를 레시피로 |
+| 2026-09-15 | **`docs/setup-guide.md`** 작성 — 프로젝트를 0부터 세우는 14단계 + 놓쳤던 15가지 |
 
 ---
 
@@ -312,3 +345,10 @@ where user_id = (select id from auth.users where email = '주소@example.com');
   민감한 파일일수록 기간을 짧게 잡고, 메신저로 전달하지 않는다
 - **업로드 파일명은 서버가 정한다.** 사용자 이름을 그대로 쓰면 덮어쓰기·경로 조작이 생긴다.
   확장자도 파일명이 아니라 **MIME 형식에서** 가져온다
+- **Git은 지워도 과거 커밋에 남는다.** 개인정보가 한 번 올라가면 `git rm` 으로 지워도
+  이력에 그대로 있고, 누가 복제해 갔다면 회수할 수 없다. **들어가지 않게 막는 것이 유일한 방법**
+- **설계도는 공개, 데이터는 비공개.** `db/*.sql`(구조)은 올리고 `*.sql.gz`(내용)는 올리지 않는다
+- **같은 PC 안의 백업은 절반짜리다.** PC가 고장나면 원본과 백업이 같이 사라진다.
+  사본 3개 · 매체 2종 · **외부 1곳**
+- **순서를 적어두면 기억에 의존하지 않아도 된다.** 매번 같은 순서로 했는데 적어두지 않아서
+  며칠 뒤에 다시 물어보게 됐다 → `docs/workflow.md`
