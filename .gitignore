@@ -18,6 +18,14 @@ out/
 npm-debug.log*
 yarn-error.log*
 
+# ---- DB 백업 (개인정보 포함. 절대 커밋 금지) ----
+db_backup/
+*.csv
+*.sql.gz
+*.dump
+# 단, db/ 의 마이그레이션 SQL 은 구조만 담고 있으므로 커밋합니다.
+!db/*.sql
+
 # ---- 백업 / 임시 파일 ----
 backup/
 backup_*/
