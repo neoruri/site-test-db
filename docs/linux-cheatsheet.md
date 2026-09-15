@@ -95,17 +95,6 @@ id                   # 내 uid·소속 그룹
 
 > 폴더의 `x`는 "실행"이 아니라 **"안으로 들어갈 수 있음"** 을 뜻합니다.
 
-## 서비스 (웹서버·DB 등)
-
-```bash
-sudo systemctl status  서비스명   # 상태 확인   ← 가장 많이 씀
-sudo systemctl restart 서비스명   # 재시작
-sudo systemctl stop    서비스명   # 중지
-sudo systemctl start   서비스명   # 시작
-sudo systemctl enable  서비스명   # 부팅 시 자동 시작
-journalctl -u 서비스명 -n 50      # 그 서비스 로그 최근 50줄
-```
-
 ## 자원 상태 — 장애 대응 1순위
 
 ```bash
@@ -369,15 +358,6 @@ code .                               # 현재 폴더를 VS Code로 열기
 |---|---|---|
 | `~/` (리눅스 안) | **빠름** | **진짜 권한** |
 | `/mnt/...` (Windows) | 느림 | 전부 `777` (의미 없음) |
-
-## Windows 파일 접근 (WSL 전용)
-
-```bash
-ls /mnt                              # 연결된 드라이브 목록
-cd /mnt/e/claude/site-test-db        # E:\claude\site-test-db
-explorer.exe .                       # 현재 폴더를 Windows 탐색기로 열기
-code .                               # 현재 폴더를 VS Code로 열기
-```
 
 ---
 
